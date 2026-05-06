@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,7 +8,9 @@
     <link rel="stylesheet" href="styles.css">
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
+
 <body>
 
     <header class="header">
@@ -22,10 +25,11 @@
     </header>
 
     <main class="container">
-        
+
         <section class="welcome-section">
             <h2>¡Bienvenidos a nuestro Stand!</h2>
-            <p>Tu opinión es fundamental para nuestro proyecto de <strong>Emprendimiento e Innovación</strong>.<br>Ayúdanos evaluando nuestra propuesta.</p>
+            <p>Tu opinión es fundamental para nuestro proyecto de <strong>Emprendimiento e
+                    Innovación</strong>.<br>Ayúdanos evaluando nuestra propuesta.</p>
         </section>
 
         <div class="stats-bar">
@@ -40,38 +44,147 @@
             </div>
         </div>
 
-        <div class="action-grid">
+
+
+        <div class="card form-card">
+            <p>
+                Somos estudiantes de la carrera de TIC desarrollando el proyecto <strong>EcoScan</strong>,
+                una solución tecnológica para mejorar la calidad de los servicios alimenticios en la universidad.
+
+                La presente encuesta tiene como objetivo recopilar su opinión sobre la atención, limpieza
+                y calidad del servicio. Sus respuestas serán utilizadas únicamente con fines académicos.
+
+                Agradecemos su colaboración.
+            </p>
+
             <div class="card">
+                <h3>Encuesta EcoScan</h3>
+
+                <form id="form-encuesta">
+
+                    <label>¿Has tenido una mala experiencia?</label>
+                    <select required>
+                        <option>Si</option>
+                        <option>No</option>
+                        <option>No recuerdo</option>
+                    </select>
+
+                    <label>¿Son efectivos los métodos actuales?</label>
+                    <select required>
+                        <option>Nada efectivos</option>
+                        <option>Poco efectivos</option>
+                        <option>No existen</option>
+                    </select>
+
+                    <label>¿Usarías un sistema QR?</label>
+                    <select required>
+                        <option>Me encantaría</option>
+                        <option>Sería útil</option>
+                        <option>Me es indiferente</option>
+                    </select>
+
+                    <label>¿Influye en tu decisión?</label>
+                    <select required>
+                        <option>Mucho</option>
+                        <option>Poco</option>
+                        <option>No influye</option>
+                    </select>
+
+                    <label>¿Reportarías limpieza?</label>
+                    <select required>
+                        <option>Sí</option>
+                        <option>Tal vez</option>
+                        <option>Solo si es rápido</option>
+                    </select>
+
+                    <label>¿Te gustaría sugerir productos?</label>
+                    <select required>
+                        <option>Sí</option>
+                        <option>No</option>
+                        <option>Tal vez</option>
+                    </select>
+
+                    <label>¿Mejoraría el tiempo de espera?</label>
+                    <select required>
+                        <option>Sí</option>
+                        <option>No</option>
+                        <option>Tal vez</option>
+                    </select>
+
+                    <label>Importancia de tener voz (1-5)</label>
+                    <input type="number" min="1" max="5" required>
+
+                    <button type="submit" class="btn-send">Enviar Encuesta</button>
+
+                </form>
+
+                <div class="charts-container">
+
+                    <div class="chart-box">
+                        <h4>Experiencias negativas</h4>
+                        <canvas id="grafico"></canvas>
+                    </div>
+
+                    <div class="chart-box">
+                        <h4>Uso del sistema QR</h4>
+                        <canvas id="grafico2"></canvas>
+                    </div>
+
+                    <div class="chart-box">
+                        <h4>Importancia de participación</h4>
+                        <canvas id="grafico3"></canvas>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+        <div class="card form-card">
+            <h3>Encuesta Detallada</h3>
+            <p>Para un análisis más profundo y ayudarnos a recopilar datos exactos, por favor llena nuestro
+                formulario oficial de Google.</p>
+
+            <div class="spacer" style="flex-grow: 1;"></div>
+
+            <div class="animated-arrow">👇</div>
+
+            <a href="https://docs.google.com/forms/d/e/1FAIpQLSfdX3gHtISahDIsKw1xqHi6ZltJ0DI6uvIcDvE4cPd2u_IFnQ/viewform?usp=dialog"
+                target="_blank" class="btn-forms">Ir al Formulario de Google</a>
+        </div>
+
+
+
+        <div class="action-grid">
+            <div class="card review-block">
                 <h3>Reseña Rápida</h3>
-                <p>Califica con estrellas y deja un mensaje corto:</p>
+                <p>Califica con estrellas y deja un mensaje corto sobre tu experiencia con el proyecto:</p>
                 <div class="star-rating" id="rating-input">
-                    <span data-v="5" class="active">★</span><span data-v="4">★</span><span data-v="3">★</span><span data-v="2">★</span><span data-v="1">★</span>
+                    <span data-v="5" class="active">★</span><span data-v="4">★</span><span data-v="3">★</span><span
+                        data-v="2">★</span><span data-v="1">★</span>
                 </div>
                 <form id="comment-form">
                     <input type="text" id="userName" placeholder="Tu nombre o Apellido" required>
                     <textarea id="userComment" placeholder="¿Qué tal te pareció el proyecto?" required></textarea>
                     <button type="submit" class="btn-send">Publicar Comentario</button>
                 </form>
-            </div>
 
-            <div class="card form-card">
-                <h3>Encuesta Detallada</h3>
-                <p>Para un análisis más profundo y ayudarnos a recopilar datos exactos, por favor llena nuestro formulario oficial de Google.</p>
-                
-                <div class="spacer" style="flex-grow: 1;"></div>
-                
-                <div class="animated-arrow">👇</div>
-                
-                <a href="https://docs.google.com/forms/d/e/1FAIpQLSfdX3gHtISahDIsKw1xqHi6ZltJ0DI6uvIcDvE4cPd2u_IFnQ/viewform?usp=dialog" target="_blank" class="btn-forms">Ir al Formulario de Google</a>
+                <div class="card wall-section">
+                    <h2>Muro de Feedback en Tiempo Real</h2>
+                    <div id="comments-container" class="wall">
+                        <p class="loading-text">Cargando comentarios...</p>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <section class="wall-section">
-            <h2>Muro de Feedback en Tiempo Real</h2>
-            <div id="comments-container" class="wall">
-                <p class="loading-text">Cargando comentarios...</p>
-            </div>
-        </section>
+        <div class="report-area">
+            <button onclick="generarReporte()" class="btn-send report-btn">
+                Descargar Reporte 📊
+            </button>
+        </div>
 
     </main>
 
@@ -85,8 +198,10 @@
         </div>
     </footer>
 
-    <audio id="ding-sound" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" preload="auto"></audio>
+    <audio id="ding-sound" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3"
+        preload="auto"></audio>
 
     <script src="script.js"></script>
 </body>
+
 </html>

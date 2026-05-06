@@ -98,11 +98,49 @@ body {
 .stat-card p { margin: 10px 0 0; color: var(--muted); font-weight: 600; text-transform: uppercase; font-size: 0.9rem; }
 .stars-display { color: #f1c40f; font-size: 1.5rem; margin-top: 5px; letter-spacing: 2px; }
 
-.action-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; }
+.action-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 36px;
+    align-items: stretch;
+    margin-bottom: 20px;
+}
+
+.review-block {
+    display: flex;
+    flex-direction: column;
+    gap: 34px;
+    align-items: center;
+    text-align: left;
+}
+
+.review-block .star-rating {
+    justify-content: center;
+}
+
+.review-block form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.wall-section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 28px;
+    width: 100%;
+    box-shadow: 0 20px 40px rgba(46,204,113,0.12);
+    margin-top: 8px;
+}
 
 .card {
-    background: var(--surface); padding: 24px; border-radius: 20px;
-    box-shadow: 0 18px 38px var(--card-shadow); border: 1px solid var(--border);
+    background: var(--surface);
+    padding: 24px;
+    border-radius: 20px;
+    box-shadow: 0 18px 38px var(--card-shadow);
+    border: 1px solid var(--border);
     transition: all 0.3s ease;
 }
 
@@ -113,7 +151,7 @@ body {
     border-color: var(--primary);
 }
 
-.form-card { display: flex; flex-direction: column; }
+.form-card { display: flex; flex-direction: column; margin-bottom: 30px; }
 
 /* LA FLECHA ANIMADA */
 .animated-arrow {
@@ -129,13 +167,46 @@ body {
 .star-rating span:hover, .star-rating span:hover ~ span, .star-rating span.active, .star-rating span.active ~ span { color: #f1c40f; }
 .star-rating span { color: #ccc; transition: color 0.2s ease; }
 
-input, textarea {
-    width: 100%; margin-top: 12px; padding: 14px 14px;
-    border: 1px solid var(--border); border-radius: 12px;
-    background: transparent; color: var(--text);
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+input, textarea, select {
+    width: 100%; margin-top: 12px; padding: 14px;
+    border: 1.5px solid var(--border); border-radius: 12px;
+    background: var(--surface); color: var(--text);
+    transition: all 0.3s ease;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.95rem;
 }
-input:focus, textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(46,204,113,0.12); }
+
+select {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 18px;
+    padding-right: 40px;
+}
+
+input:focus, textarea:focus, select:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 4px rgba(46,204,113,0.16);
+    background-color: var(--surface);
+}
+
+input:hover, textarea:hover, select:hover {
+    border-color: var(--primary);
+}
+
+.report-area {
+    text-align: center;
+    margin-top: 38px;
+}
+
+.report-area .btn-send {
+    max-width: 360px;
+    margin: 0 auto;
+    padding: 16px 20px;
+}
 
 .btn-send, .btn-forms {
     width: 100%; margin-top: 14px; padding: 14px; border: none; border-radius: 14px;
@@ -147,23 +218,46 @@ input:focus, textarea:focus { outline: none; border-color: var(--primary); box-s
 .btn-forms { background: #3498db; color: white; text-decoration: none; display: block; text-align: center; box-shadow: 0 12px 22px rgba(52,152,219,0.2); }
 .btn-forms:hover { transform: translateY(-2px); box-shadow: 0 16px 26px rgba(52,152,219,0.4); }
 
-.wall-section h2 { text-align: center; margin-top: 10px; color: var(--text); }
-.wall { display: flex; flex-direction: column; gap: 14px; margin-top: 20px; }
+.wall-section h2 {
+    margin-top: 0;
+    margin-bottom: 22px;
+    font-size: 1.35rem;
+    color: var(--text);
+    text-align: left;
+}
+.wall {
+    display: grid;
+    gap: 16px;
+    margin-top: 10px;
+}
 .comment-card {
-    background: var(--surface); padding: 18px; border-radius: 16px;
-    border-left: 5px solid var(--primary); animation: slideIn 0.4s ease-out;
-    box-shadow: 0 14px 28px var(--card-shadow); border: 1px solid var(--border);
+    background: var(--surface);
+    padding: 18px;
+    border-radius: 16px;
+    border-left: 5px solid var(--primary);
+    animation: slideIn 0.4s ease-out;
+    box-shadow: 0 14px 28px var(--card-shadow);
+    border: 1px solid var(--border);
+    text-align: left;
 }
 .comment-card strong { display: inline-block; margin-bottom: 8px; color: var(--text); }
 .comment-card p { margin: 10px 0 0; line-height: 1.7; color: var(--muted); }
 
 @keyframes slideIn { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
-@media (max-width: 900px) { .action-grid { grid-template-columns: 1fr; } }
+@media (max-width: 900px) {
+    .action-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 768px) {
+    .action-grid { gap: 18px; }
+    .report-area { margin-top: 22px; }
+}
+
 @media (max-width: 600px) {
     .stats-bar { grid-template-columns: 1fr; }
     .header { flex-direction: column; text-align: center; gap: 10px; }
-    .theme-btn { position: absolute; top: 15px; right: 15px; } /* Ajuste para celular */
+    .theme-btn { position: absolute; top: 15px; right: 15px; }
 }
 
 .footer {
@@ -173,3 +267,124 @@ input:focus, textarea:focus { outline: none; border-color: var(--primary); box-s
 .footer p { margin: 6px 0; font-size: 0.95rem; }
 .footer a { color: var(--primary); text-decoration: none; }
 .footer a:hover { text-decoration: underline; }
+
+/* ===== ESTILOS PARA LA ENCUESTA ===== */
+
+#form-encuesta {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+#form-encuesta label {
+    margin-top: 18px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 600;
+    color: var(--text);
+    font-size: 1.05rem;
+    counter-increment: question-counter;
+}
+
+#form-encuesta label::before {
+    content: counter(question-counter);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary), var(--dark));
+    color: white;
+    font-weight: 700;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(46,204,113,0.25);
+}
+
+#form-encuesta {
+    counter-reset: question-counter;
+}
+
+#form-encuesta select {
+    margin-top: 6px;
+}
+
+#form-encuesta select:hover {
+    background-color: rgba(46,204,113,0.04);
+}
+
+#form-encuesta button {
+    margin-top: 20px;
+}
+
+.card.form-card > p {
+    line-height: 1.8;
+    padding: 16px;
+    background: rgba(46,204,113,0.08);
+    border-left: 4px solid var(--primary);
+    border-radius: 10px;
+    margin: 0 0 20px 0;
+    color: var(--text);
+    font-size: 0.95rem;
+}
+
+.card.form-card > .card {
+    margin-top: 20px;
+    border: 2px solid rgba(46,204,113,0.2);
+}
+
+#form-encuesta input[type="number"] {
+    margin-top: 6px;
+}
+
+/* ===== ESTILOS PARA LOS GRÁFICOS ===== */
+
+.charts-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    margin-top: 30px;
+    padding: 20px;
+    background: rgba(46,204,113,0.05);
+    border-radius: 16px;
+    border: 1px solid var(--border);
+}
+
+#grafico, #grafico2, #grafico3 {
+    width: 100% !important;
+    height: 300px !important;
+    max-width: 500px;
+    margin: 0 auto;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px var(--card-shadow);
+    background: var(--surface);
+    border: 1px solid var(--border);
+}
+
+/* Ajustes para móviles */
+@media (max-width: 768px) {
+    .charts-container {
+        grid-template-columns: 1fr;
+        gap: 15px;
+        padding: 15px;
+    }
+
+    #grafico, #grafico2, #grafico3 {
+        height: 250px !important;
+    }
+}
+
+.chart-box {
+    display: flex;
+    flex-direction: column; /* 🔥 esto pone el título arriba */
+    align-items: center;
+    gap: 10px;
+    text-align: center;
+}
+
+.chart-box h4 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: var(--text);
+}
