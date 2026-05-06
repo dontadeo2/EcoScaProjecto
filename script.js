@@ -249,6 +249,7 @@ database.ref("encuestas").on("value", snapshot => {
         },
         options: {
             responsive: true,
+            maintainAspectRatio: false,
             plugins: {
                 legend: {
                     display: true
@@ -322,6 +323,7 @@ database.ref("encuestas").on("value", snapshot => {
         },
         options: {
             responsive: true,
+            maintainAspectRatio: false,
             plugins: {
                 legend: {
                     display: false
@@ -352,6 +354,23 @@ database.ref("encuestas").on("value", snapshot => {
                 label: "Importancia",
                 data: valores
             }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: true
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1
+                    }
+                }
+            }
         }
     });
 

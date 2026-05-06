@@ -342,7 +342,7 @@ input:hover, textarea:hover, select:hover {
 
 .charts-container {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 20px;
     margin-top: 30px;
     padding: 20px;
@@ -353,25 +353,43 @@ input:hover, textarea:hover, select:hover {
 
 #grafico, #grafico2, #grafico3 {
     width: 100% !important;
-    height: 300px !important;
-    max-width: 500px;
+    height: auto !important;
+    aspect-ratio: 1.4 / 1;
+    max-width: 450px;
     margin: 0 auto;
     border-radius: 12px;
     box-shadow: 0 8px 20px var(--card-shadow);
     background: var(--surface);
     border: 1px solid var(--border);
+    padding: 10px;
 }
 
-/* Ajustes para móviles */
-@media (max-width: 768px) {
+/* Ajustes para tablets */
+@media (max-width: 900px) {
     .charts-container {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
         gap: 15px;
         padding: 15px;
     }
 
     #grafico, #grafico2, #grafico3 {
-        height: 250px !important;
+        max-width: 350px;
+        aspect-ratio: 1.3 / 1;
+    }
+}
+
+/* Ajustes para móviles */
+@media (max-width: 600px) {
+    .charts-container {
+        grid-template-columns: 1fr;
+        gap: 20px;
+        padding: 12px;
+    }
+
+    #grafico, #grafico2, #grafico3 {
+        width: 100% !important;
+        max-width: 100%;
+        aspect-ratio: 1.2 / 1;
     }
 }
 
