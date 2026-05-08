@@ -115,83 +115,60 @@ themeBtn.onclick = () => {
 
 // --- GENERAR REPORTE EN PDF ---
 function generarReporte() {
+    const pass = prompt("Introduce tu clave de acceso:");
+    
+    // Configuración de accesos
+    const accesos = {
+        "admin123": "TODOS",          // Tú ves todo
+        "tic2026": "Bar TIC",         // Dueño del Bar TIC
+        "cafe99": "Cafetería Central", // Dueño de Cafetería
+        "facu77": "Bar de la Facultad" // Dueño de Facultad
+    };
 
-    Promise.all([
-        database.ref('comments').once('value'),
-        database.ref('encuestas').once('value')
-    ]).then(([commentsSnap, encuestasSnap]) => {
+    const permiso = accesos[pass];
 
-        const comments = commentsSnap.val();
-        const encuestas = encuestasSnap.val();
+    if (!permiso) {
+        alert("Clave incorrecta. Acceso denegado.");
+        return;
+    }
 
-        let total = 0;
-        let suma = 0;
+    database.ref('opiniones_por_local').once('value', (snapshot) => {
+        const locales = snapshot.val();
+        if (!locales) { alert("No hay datos aún."); return; }
 
-        // =====================
-        // 📊 PROCESAR COMENTARIOS
-        // =====================
-        let contenido = `===== REPORTE ECOSCAN =====\n\n`;
+        let contenido = `===== REPORTE DE FEEDBACK - ECOSCAN =====\n`;
+        contenido += `Acceso: ${permiso}\n\n`;
 
-        if (comments) {
-            for (let id in comments) {
-                total++;
-                suma += parseInt(comments[id].rating);
-            }
-        }
-
-        let promedio = total > 0 ? (suma / total).toFixed(2) : 0;
-
-        contenido += `Total de opiniones: ${total}\n`;
-        contenido += `Calificación promedio: ${promedio}\n\n`;
-
-        contenido += `===== COMENTARIOS =====\n\n`;
-
-        if (comments) {
-            for (let id in comments) {
-                contenido += `Nombre: ${comments[id].name}\n`;
-                contenido += `Calificación: ${comments[id].rating} estrellas\n`;
-                contenido += `Comentario: ${comments[id].text}\n`;
-                contenido += `-------------------------\n`;
+        if (permiso === "TODOS") {
+            // Reporte para ti (Super Admin)
+            for (let local in locales) {
+                contenido += `📍 LOCAL: ${local}\n`;
+                for (let id in locales[local]) {
+                    contenido += `   - ${locales[local][id].comentario} (${locales[local][id].fecha})\n`;
+                }
+                contenido += `----------------------------------\n`;
             }
         } else {
-            contenido += "No hay comentarios registrados.\n";
-        }
-
-        // =====================
-        // 📊 PROCESAR ENCUESTAS
-        // =====================
-
-        contenido += `\n===== RESULTADOS ENCUESTA =====\n\n`;
-
-        let si = 0, no = 0, otros = 0;
-
-        if (encuestas) {
-            for (let id in encuestas) {
-                if (encuestas[id].p1 === "Si") si++;
-                else if (encuestas[id].p1 === "No") no++;
-                else otros++;
+            // Reporte filtrado para el dueño específico
+            const datosLocal = locales[permiso];
+            if (datosLocal) {
+                contenido += `📍 LOCAL: ${permiso}\n`;
+                for (let id in datosLocal) {
+                    contenido += `   - ${datosLocal[id].comentario} (${datosLocal[id].fecha})\n`;
+                }
+            } else {
+                contenido += "No hay opiniones registradas para este local.";
             }
-
-            contenido += `Pregunta 1 (Mala experiencia):\n`;
-            contenido += `Sí: ${si}\nNo: ${no}\nNo recuerda: ${otros}\n\n`;
-
-            contenido += `Total encuestas: ${Object.keys(encuestas).length}\n`;
-        } else {
-            contenido += "No hay encuestas registradas.\n";
         }
 
-        // =====================
-        // 📥 DESCARGA
-        // =====================
-
-        let blob = new Blob(["\uFEFF" + contenido], { type: "text/plain;charset=utf-8;" });
-
-        let enlace = document.createElement("a");
+        // Descarga del archivo
+        const blob = new Blob(["\uFEFF" + contenido], { type: "text/plain;charset=utf-8;" });
+        const enlace = document.createElement("a");
         enlace.href = URL.createObjectURL(blob);
-        enlace.download = "reporte_ecoscan.txt";
+        enlace.download = `Reporte_${permiso.replace(" ", "_")}.txt`;
         enlace.click();
-
     });
+
 }
 
 document.getElementById("form-encuesta").onsubmit = function (e) {
@@ -375,3 +352,91 @@ database.ref("encuestas").on("value", snapshot => {
     });
 
 });
+
+function irAPanelOpiniones() {
+    document.getElementById('interfaz-inicio').style.display = 'none';
+    document.getElementById('interfaz-detallada').style.display = 'block';
+    // Quitamos el scrollTo para que no te mande arriba
+}
+
+function irAInicio() {
+    document.getElementById('interfaz-detallada').style.display = 'none';
+    document.getElementById('interfaz-inicio').style.display = 'block';
+}
+
+// 1. INICIALIZACIÓN (PON TU PUBLIC KEY AQUÍ)
+emailjs.init("8N-lpxos049EJBCNn"); 
+
+function enviarOpinionFinal() {
+    const localSelect = document.getElementById('local-seleccionado');
+    const opinionText = document.getElementById('comentario-detallado');
+    
+    const local = localSelect.value;
+    const opinion = opinionText.value;
+
+    // Quitamos la búsqueda del nombre porque no existe ese campo en tu Interfaz 2
+    if (!local || !opinion.trim()) {
+        alert("Por favor selecciona un local y escribe tu opinión.");
+        return;
+    }
+
+    const datosFirebase = {
+        usuario: "Estudiante Anónimo", // Siempre anónimo
+        comentario: opinion,
+        fecha: new Date().toLocaleString()
+    };
+
+    // 2. GUARDAR EN FIREBASE
+    database.ref('opiniones_por_local/' + local).push(datosFirebase)
+    .then(() => {
+        // 3. ENVIAR EMAIL (Dentro de un try-catch para que si falla el mail, igual se limpie la pantalla)
+        try {
+            enviarNotificacionEmail(local, "Estudiante Anónimo", opinion);
+        } catch(e) {
+            console.log("Error al disparar EmailJS:", e);
+        }
+        
+        // 4. ÉXITO Y LIMPIEZA
+        alert("✅ ¡Opinión enviada con éxito!");
+        
+        opinionText.value = ""; 
+        localSelect.selectedIndex = 0; 
+        
+        irAInicio(); 
+    })
+    .catch((error) => {
+        alert("Error de conexión.");
+        console.error(error);
+    });
+}
+
+// 1. INICIALIZACIÓN CON TU CLAVE REAL (Sacada de tu foto)
+emailjs.init("8N-lpxos049EJBCNn"); 
+
+function enviarNotificacionEmail(local, nombre, mensaje) {
+    const serviceID = 'service_z00x1o9';
+    const templateID = 'template_9nc3ks4'; // El que empieza por template_
+
+    // COMPROBACIÓN DE LLAVES:
+    // Aquí es donde "mensaje" y "establecimiento" deben llamarse igual que en EmailJS
+    const parametros = {
+        establecimiento: local,    // <--- ESTO LLENA EL {{establecimiento}}
+        mensaje: mensaje,          // <--- ESTO LLENA EL {{mensaje}}
+        nombre: "Anónimo",         
+        email_dueno: obtenerEmailDelDueño(local) // Esto asegura que le llegue al dueño correcto
+    };
+
+    emailjs.send(serviceID, templateID, parametros)
+        .then(() => console.log("¡Correo enviado con éxito!"))
+        .catch(err => console.error("Error al enviar correo:", err));
+}
+
+// Asegúrate de que esta función también esté para que el correo sepa a dónde ir
+function obtenerEmailDelDueño(local) {
+    const correos = {
+        "Cafetería Central": "tu_correo@gmail.com", // Cambia por los reales
+        "Bar de la Facultad": "otro_correo@gmail.com",
+        "Bar TIC": "jenniffer.quinonez.clavijo@utelvt.edu.ec" 
+    };
+    return correos[local] || "jenniffer.quinonez.clavijo@utelvt.edu.ec";
+}
