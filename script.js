@@ -13,6 +13,33 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const database = firebase.database();
 
+console.log('Firebase inicializado correctamente');
+
+// Verificar conexión a Firebase
+database.ref('.info/connected').on('value', (snap) => {
+    if (snap.val() === true) {
+        console.log('Conectado a Firebase');
+    } else {
+        console.log('Desconectado de Firebase');
+    }
+});
+
+// Verificar conexión a Firebase
+database.ref('.info/connected').on('value', (snap) => {
+    const indicator = document.getElementById('connection-indicator');
+    const statusText = document.getElementById('status-text');
+
+    if (snap.val() === true) {
+        console.log('✅ Conectado a Firebase');
+        if (indicator) indicator.classList.add('connected');
+        if (statusText) statusText.innerText = 'Conectado - Tiempo Real';
+    } else {
+        console.log('❌ Desconectado de Firebase');
+        if (indicator) indicator.classList.remove('connected');
+        if (statusText) statusText.innerText = 'Desconectado';
+    }
+});
+
 let selectedRating = 5;
 
 // Manejo de las Estrellas
@@ -28,29 +55,53 @@ stars.forEach(s => {
 // Guardar Comentario en la Nube
 document.getElementById('comment-form').onsubmit = (e) => {
     e.preventDefault();
-    const name = document.getElementById('userName').value;
-    const text = document.getElementById('userComment').value;
+    const name = document.getElementById('userName').value.trim();
+    const text = document.getElementById('userComment').value.trim();
+
+    if (!text) {
+        alert('Por favor escribe un comentario');
+        return;
+    }
+
     const btn = e.target.querySelector('.btn-send');
+    const originalText = btn.innerText;
 
-    btn.innerText = "¡Enviado! Gracias 💚";
-    btn.style.background = "#27ae60";
+    btn.innerText = "Enviando...";
+    btn.disabled = true;
 
-    database.ref('comments').push({
-        name: name,
+    const commentData = {
+        name: name || 'Anónimo',
         text: text,
         rating: selectedRating,
         timestamp: Date.now()
-    }).then(() => {
-        setTimeout(() => {
-            btn.innerText = "Publicar Comentario";
-            btn.style.background = "var(--primary)";
-        }, 3000);
-    });
+    };
 
-    document.getElementById('comment-form').reset();
-    selectedRating = 5;
-    stars.forEach(st => st.classList.remove('active'));
-    stars[0].classList.add('active');
+    console.log('Enviando comentario:', commentData);
+
+    database.ref('comments').push(commentData)
+        .then((ref) => {
+            console.log('Comentario enviado exitosamente, ID:', ref.key);
+            btn.innerText = "¡Enviado! Gracias 💚";
+            btn.style.background = "#27ae60";
+
+            // Resetear formulario
+            document.getElementById('comment-form').reset();
+            selectedRating = 5;
+            stars.forEach(st => st.classList.remove('active'));
+            stars[0].classList.add('active');
+
+            setTimeout(() => {
+                btn.innerText = originalText;
+                btn.style.background = "var(--primary)";
+                btn.disabled = false;
+            }, 3000);
+        })
+        .catch((error) => {
+            console.error('Error al enviar comentario:', error);
+            alert('Error al enviar comentario. Inténtalo de nuevo.');
+            btn.innerText = originalText;
+            btn.disabled = false;
+        });
 };
 
 // Variables para controlar el sonido
@@ -59,36 +110,85 @@ let previousCount = 0;
 const dingSound = document.getElementById('ding-sound');
 
 // Escuchar cambios en tiempo real
+console.log('Configurando listener de comentarios...');
+
 database.ref('comments').on('value', (snapshot) => {
+    console.log('Listener activado - snapshot recibido');
     const data = snapshot.val();
+    console.log('Datos recibidos:', data);
     const container = document.getElementById('comments-container');
+
+    if (!container) {
+        console.error('Contenedor de comentarios no encontrado');
+        return;
+    }
+
+    // Limpiar contenedor
     container.innerHTML = '';
 
     let total = 0;
     let sumRating = 0;
 
-    for (let id in data) {
-        total++;
-        sumRating += parseInt(data[id].rating);
+    if (data) {
+        console.log('Procesando comentarios...');
+        // Convertir a array para ordenar por timestamp (más recientes primero)
+        const commentsArray = Object.entries(data).map(([id, comment]) => ({
+            id,
+            ...comment
+        })).sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
 
-        const div = document.createElement('div');
-        div.className = 'comment-card';
-        div.innerHTML = `
-            <strong>${data[id].name}</strong> - <span style="color:#f1c40f; font-size:1.2rem;">${'★'.repeat(data[id].rating)}</span>
-            <p>${data[id].text}</p>
-        `;
-        container.prepend(div);
+        console.log('Comentarios ordenados:', commentsArray.length);
+
+        commentsArray.forEach((comment, index) => {
+            total++;
+            sumRating += parseInt(comment.rating) || 0;
+
+            const div = document.createElement('div');
+            div.className = 'comment-card';
+            div.innerHTML = `
+                <strong>${comment.name || 'Anónimo'}</strong>
+                <span class="stars">${'★'.repeat(comment.rating || 5)}</span>
+                <p>${comment.text || 'Sin comentario'}</p>
+                ${comment.timestamp ? `<small>${new Date(comment.timestamp).toLocaleString()}</small>` : ''}
+            `;
+            container.appendChild(div);
+            console.log(`Comentario ${index + 1} agregado al DOM`);
+        });
+    } else {
+        console.log('No hay datos de comentarios');
     }
 
-    document.getElementById('total-comments').innerText = total;
-    document.getElementById('avg-rating').innerText = total > 0 ? (sumRating / total).toFixed(1) : "5.0";
+    // Actualizar estadísticas
+    const totalCommentsEl = document.getElementById('total-comments');
+    const avgRatingEl = document.getElementById('avg-rating');
 
-    if (!isFirstLoad && total > previousCount) {
-        dingSound.play().catch(error => console.log("Clickea la pantalla primero para el sonido."));
+    if (totalCommentsEl) {
+        totalCommentsEl.innerText = total;
+        console.log('Estadísticas actualizadas - Total:', total);
+    }
+    if (avgRatingEl) {
+        avgRatingEl.innerText = total > 0 ? (sumRating / total).toFixed(1) : "5.0";
+        console.log('Estadísticas actualizadas - Promedio:', total > 0 ? (sumRating / total).toFixed(1) : "5.0");
+    }
+
+    // Mostrar mensaje si no hay comentarios
+    if (total === 0) {
+        container.innerHTML = '<div class="loading-text">No hay comentarios aún. ¡Sé el primero en opinar!</div>';
+        console.log('Mostrando mensaje de no comentarios');
+    }
+
+    // Reproducir sonido para nuevos comentarios
+    if (!isFirstLoad && total > previousCount) {        console.log('Nuevo comentario detectado, reproduciendo sonido');        dingSound.play().catch(error => console.log("Clickea la pantalla primero para el sonido."));
     }
 
     previousCount = total;
     isFirstLoad = false;
+}, (error) => {
+    console.error('Error al cargar comentarios:', error);
+    const container = document.getElementById('comments-container');
+    if (container) {
+        container.innerHTML = '<div class="loading-text" style="color: #e74c3c;">Error al cargar comentarios. Verifica tu conexión.</div>';
+    }
 });
 
 // --- MAGIA DEL MODO OSCURO ---
@@ -453,3 +553,21 @@ function obtenerEmailDelDueño(local) {
     };
     return correos[local] || "jenniffer.quinonez.clavijo@utelvt.edu.ec";
 }
+
+// Función de prueba para verificar funcionamiento en tiempo real
+function testComment() {
+    const testData = {
+        name: 'Usuario de Prueba',
+        text: 'Este es un comentario de prueba para verificar el funcionamiento en tiempo real.',
+        rating: 4,
+        timestamp: Date.now()
+    };
+
+    console.log('Enviando comentario de prueba...');
+    database.ref('comments').push(testData)
+        .then(() => console.log('✅ Comentario de prueba enviado'))
+        .catch(error => console.error('❌ Error en comentario de prueba:', error));
+}
+
+// Hacer la función disponible globalmente para pruebas
+window.testComment = testComment;

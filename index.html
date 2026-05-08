@@ -209,12 +209,17 @@
                     <input type="text" id="userName" placeholder="Tu nombre o Apellido" required>
                     <textarea id="userComment" placeholder="¿Qué tal te pareció el proyecto?" required></textarea>
                     <button type="submit" class="btn-send">Publicar Comentario</button>
+                    
                 </form>
 
                 <div class="card wall-section">
                     <h2>Muro de Feedback en Tiempo Real</h2>
+                    <div class="connection-status">
+                        <span id="connection-indicator" class="status-dot"></span>
+                        <small id="status-text">Conectando...</small>
+                    </div>
                     <div id="comments-container" class="wall">
-                        <p class="loading-text">Cargando comentarios...</p>
+                        <div class="loading-text">Cargando comentarios...</div>
                     </div>
                 </div>
             </div>

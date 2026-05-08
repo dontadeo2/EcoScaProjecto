@@ -218,30 +218,194 @@ input:hover, textarea:hover, select:hover {
 .btn-forms { background: #3498db; color: white; text-decoration: none; display: block; text-align: center; box-shadow: 0 12px 22px rgba(52,152,219,0.2); }
 .btn-forms:hover { transform: translateY(-2px); box-shadow: 0 16px 26px rgba(52,152,219,0.4); }
 
+.btn-test {
+    background: #f39c12;
+    color: white;
+    margin-top: 8px;
+    font-size: 0.9rem;
+    padding: 10px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 8px 16px rgba(243, 156, 18, 0.2);
+}
+.btn-test:hover {
+    background: #e67e22;
+    transform: translateY(-1px);
+    box-shadow: 0 10px 20px rgba(243, 156, 18, 0.4);
+}
+
 .wall-section h2 {
     margin-top: 0;
     margin-bottom: 22px;
     font-size: 1.35rem;
     color: var(--text);
     text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
+
+.wall-section h2::before {
+    content: "💬";
+    font-size: 1.2rem;
+}
+
+.connection-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 15px;
+    padding: 8px 12px;
+    background: rgba(46,204,113,0.1);
+    border-radius: 8px;
+    font-size: 0.85rem;
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #e74c3c;
+    animation: pulse 2s infinite;
+}
+
+.status-dot.connected {
+    background: #2ecc71;
+    animation: none;
+}
+
 .wall {
-    display: grid;
+    display: flex;
+    flex-direction: column;
     gap: 16px;
     margin-top: 10px;
+    max-height: 500px;
+    overflow-y: auto;
+    padding-right: 8px;
 }
+
+.wall::-webkit-scrollbar {
+    width: 6px;
+}
+
+.wall::-webkit-scrollbar-track {
+    background: rgba(46,204,113,0.1);
+    border-radius: 3px;
+}
+
+.wall::-webkit-scrollbar-thumb {
+    background: var(--primary);
+    border-radius: 3px;
+}
+
+.wall::-webkit-scrollbar-thumb:hover {
+    background: var(--dark);
+}
+
 .comment-card {
     background: var(--surface);
-    padding: 18px;
+    padding: 20px;
     border-radius: 16px;
     border-left: 5px solid var(--primary);
     animation: slideIn 0.4s ease-out;
     box-shadow: 0 14px 28px var(--card-shadow);
     border: 1px solid var(--border);
     text-align: left;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    position: relative;
 }
-.comment-card strong { display: inline-block; margin-bottom: 8px; color: var(--text); }
-.comment-card p { margin: 10px 0 0; line-height: 1.7; color: var(--muted); }
+
+.comment-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 16px 32px rgba(46,204,113,0.15);
+}
+
+.comment-card strong {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--text);
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.comment-card .stars {
+    color: #f1c40f;
+    font-size: 1.2rem;
+    margin: 0 8px;
+    letter-spacing: 2px;
+}
+
+.comment-card p {
+    margin: 12px 0 8px 0;
+    line-height: 1.7;
+    color: var(--muted);
+    font-size: 0.95rem;
+}
+
+.comment-card small {
+    display: block;
+    margin-top: 10px;
+    color: var(--muted);
+    font-size: 0.75rem;
+    opacity: 0.8;
+}
+
+.comment-card:nth-child(even) {
+    border-left-color: #3498db;
+}
+
+.comment-card:nth-child(3n+1) {
+    border-left-color: #e74c3c;
+}
+
+/* Estilos para móviles */
+@media (max-width: 600px) {
+    .wall {
+        max-height: 400px;
+        gap: 12px;
+    }
+
+    .comment-card {
+        padding: 16px;
+        border-radius: 12px;
+    }
+
+    .comment-card strong {
+        font-size: 1rem;
+    }
+
+    .comment-card p {
+        font-size: 0.9rem;
+    }
+}
+
+/* Animación mejorada para nuevos comentarios */
+@keyframes slideIn {
+    from {
+        transform: translateY(30px) scale(0.95);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+}
+
+/* Efecto de carga */
+.loading-text {
+    text-align: center;
+    color: var(--muted);
+    padding: 40px 20px;
+    font-style: italic;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
 
 @keyframes slideIn { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
@@ -415,6 +579,6 @@ input:hover, textarea:hover, select:hover {
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
 }
-#muro-comentarios, .wall-section {
-    display: none !important;
+#muro-comentarios {
+    display: none;
 }
