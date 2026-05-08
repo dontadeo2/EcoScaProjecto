@@ -119,7 +119,7 @@ function generarReporte() {
     
     // Configuración de accesos
     const accesos = {
-        "admin123": "TODOS",          // Tú ves todo
+        "admin123": "TODOS",          // Tú (Super Admin)
         "tic2026": "Bar TIC",         // Dueño del Bar TIC
         "cafe99": "Cafetería Central", // Dueño de Cafetería
         "facu77": "Bar de la Facultad" // Dueño de Facultad
@@ -134,40 +134,51 @@ function generarReporte() {
 
     database.ref('opiniones_por_local').once('value', (snapshot) => {
         const locales = snapshot.val();
-        if (!locales) { alert("No hay datos aún."); return; }
+        if (!locales) { 
+            alert("No hay datos aún."); 
+            return; 
+        }
 
         let contenido = `===== REPORTE DE FEEDBACK - ECOSCAN =====\n`;
-        contenido += `Acceso: ${permiso}\n\n`;
+        contenido += `Acceso: ${permiso}\n`;
+        contenido += `Fecha de generación: ${new Date().toLocaleString()}\n\n`;
 
         if (permiso === "TODOS") {
-            // Reporte para ti (Super Admin)
+            // --- REPORTE PARA TI (Super Admin): Muestra nombres reales ---
             for (let local in locales) {
                 contenido += `📍 LOCAL: ${local}\n`;
                 for (let id in locales[local]) {
-                    contenido += `   - ${locales[local][id].comentario} (${locales[local][id].fecha})\n`;
+                    const dato = locales[local][id];
+                    // Aquí usamos dato.usuario para ver el nombre real
+                    contenido += `   - [${dato.usuario}]: "${dato.comentario}" (${dato.fecha})\n`;
                 }
                 contenido += `----------------------------------\n`;
             }
         } else {
-            // Reporte filtrado para el dueño específico
+            // --- REPORTE PARA DUEÑOS: Oculta nombres reales (Anónimo) ---
             const datosLocal = locales[permiso];
             if (datosLocal) {
                 contenido += `📍 LOCAL: ${permiso}\n`;
                 for (let id in datosLocal) {
-                    contenido += `   - ${datosLocal[id].comentario} (${datosLocal[id].fecha})\n`;
+                    const dato = datosLocal[id];
+                    // Aquí forzamos "Anónimo" para que el dueño no vea el nombre
+                    contenido += `   - [Anónimo]: "${dato.comentario}" (${dato.fecha})\n`;
                 }
             } else {
-                contenido += "No hay opiniones registradas para este local.";
+                contenido += `No hay opiniones registradas para el local: ${permiso}`;
             }
         }
 
-        // Descarga del archivo
+        // Descarga del archivo TXT
         const blob = new Blob(["\uFEFF" + contenido], { type: "text/plain;charset=utf-8;" });
         const enlace = document.createElement("a");
         enlace.href = URL.createObjectURL(blob);
-        enlace.download = `Reporte_${permiso.replace(" ", "_")}.txt`;
+        enlace.download = `Reporte_${permiso.replace(/ /g, "_")}.txt`;
         enlace.click();
+        
+        alert("📊 Reporte generado con éxito.");
     });
+
 
 }
 
@@ -370,46 +381,48 @@ emailjs.init("8N-lpxos049EJBCNn");
 function enviarOpinionFinal() {
     const localSelect = document.getElementById('local-seleccionado');
     const opinionText = document.getElementById('comentario-detallado');
+    const nombreInput = document.getElementById('nombre-estudiante-detallado'); // CAPTURA EL NUEVO CAMPO
     
     const local = localSelect.value;
     const opinion = opinionText.value;
+    // Si deja vacío el nombre, ponemos "Anónimo"
+    const nombreReal = nombreInput.value.trim() || "Anónimo";
 
-    // Quitamos la búsqueda del nombre porque no existe ese campo en tu Interfaz 2
     if (!local || !opinion.trim()) {
         alert("Por favor selecciona un local y escribe tu opinión.");
         return;
     }
 
+    // Guardamos el NOMBRE REAL en Firebase para ti (Super Admin)
     const datosFirebase = {
-        usuario: "Estudiante Anónimo", // Siempre anónimo
+        usuario: nombreReal, 
         comentario: opinion,
         fecha: new Date().toLocaleString()
     };
 
-    // 2. GUARDAR EN FIREBASE
     database.ref('opiniones_por_local/' + local).push(datosFirebase)
     .then(() => {
-        // 3. ENVIAR EMAIL (Dentro de un try-catch para que si falla el mail, igual se limpie la pantalla)
+        // ENVIAR EMAIL AL DUEÑO: Aquí forzamos "Estudiante Anónimo" para proteger la identidad
         try {
             enviarNotificacionEmail(local, "Estudiante Anónimo", opinion);
         } catch(e) {
-            console.log("Error al disparar EmailJS:", e);
+            console.log("Email no enviado, pero datos guardados en nube.");
         }
         
-        // 4. ÉXITO Y LIMPIEZA
         alert("✅ ¡Opinión enviada con éxito!");
         
-        opinionText.value = ""; 
-        localSelect.selectedIndex = 0; 
+        // LIMPIEZA DE CAMPOS
+        opinionText.value = "";
+        nombreInput.value = ""; 
+        localSelect.selectedIndex = 0;
         
-        irAInicio(); 
+        irAInicio();
     })
     .catch((error) => {
-        alert("Error de conexión.");
+        alert("Error al conectar con la base de datos.");
         console.error(error);
     });
 }
-
 // 1. INICIALIZACIÓN CON TU CLAVE REAL (Sacada de tu foto)
 emailjs.init("8N-lpxos049EJBCNn"); 
 
@@ -434,8 +447,8 @@ function enviarNotificacionEmail(local, nombre, mensaje) {
 // Asegúrate de que esta función también esté para que el correo sepa a dónde ir
 function obtenerEmailDelDueño(local) {
     const correos = {
-        "Cafetería Central": "tu_correo@gmail.com", // Cambia por los reales
-        "Bar de la Facultad": "otro_correo@gmail.com",
+        "Cafetería Central": "jenniffersq11@gmail.com", // Cambia por los reales
+        "Bar de la Facultad": "angel.ballestero.villegas@utelvt.edu.ec",
         "Bar TIC": "jenniffer.quinonez.clavijo@utelvt.edu.ec" 
     };
     return correos[local] || "jenniffer.quinonez.clavijo@utelvt.edu.ec";
