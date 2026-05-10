@@ -121,6 +121,24 @@ document.getElementById('comment-form').onsubmit = (e) => {
     const evidenciaInput = document.getElementById('evidencia');
     const archivo = evidenciaInput.files[0];
 
+    // ✅ VALIDAR IMAGEN
+    if (archivo) {
+
+        // Limitar formatos
+        const tiposPermitidos = ["image/png", "image/jpeg", "image/jpg"];
+
+        if (!tiposPermitidos.includes(archivo.type)) {
+            alert("Solo se permiten imágenes PNG o JPG.");
+            return;
+        }
+
+        // Limitar tamaño a 5MB
+        if (archivo.size > 3 * 1024 * 1024) {
+            alert("La imagen no puede superar los 3MB.");
+            return;
+        }
+    }
+
     // 🔥 Censurar palabras automáticamente
     let comentarioFiltrado = text;
 
