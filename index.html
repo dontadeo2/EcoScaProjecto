@@ -9,7 +9,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet"> 
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 
 <body>
@@ -20,8 +20,9 @@
             <div>
                 <h1>EcoScan <span class="live-badge">EN VIVO</span></h1>
                 <p class="subtitle">Tu feedback impulsa nuestra innovación.</p>
-                <div id="muro-comentarios" class="wall"> <p class="loading-text">Cargando comentarios...</p>
-</div>
+                <div id="muro-comentarios" class="wall">
+                    <p class="loading-text">Cargando comentarios...</p>
+                </div>
             </div>
         </div>
         <button id="theme-toggle" class="theme-btn" title="Cambiar Tema">🌙</button>
@@ -65,7 +66,8 @@
 
                 <form id="form-encuesta">
 
-                    <label>¿Ha tenido alguna experiencia negativa en los servicios alimenticios de la universidad?</label>
+                    <label>¿Ha tenido alguna experiencia negativa en los servicios alimenticios de la
+                        universidad?</label>
                     <select required>
                         <option>Si</option>
                         <option>No</option>
@@ -114,7 +116,8 @@
                         <option>Tal vez</option>
                     </select>
 
-                    <label>En una escala del 1 al 5, ¿qué tan importante considera que es la participación estudiantil?</label>
+                    <label>En una escala del 1 al 5, ¿qué tan importante considera que es la participación
+                        estudiantil?</label>
                     <input type="number" min="1" max="5" required>
 
                     <button type="submit" class="btn-send">Enviar Encuesta</button>
@@ -145,57 +148,57 @@
 
         </div>
 
-       <!-- INTERFAZ 1: PÁGINA DE INICIO (ESTADÍSTICAS Y ENCUESTA RÁPIDA) -->
-<div id="interfaz-inicio">
-    <!-- TODO tu código actual va aquí adentro (Header, Stats, Encuesta TIC, etc.) -->
-    
-    <div class="card form-card">
-        <h3>Tu Opinión Cuenta</h3>
-        <p>La opinión de los usuarios es fundamental para mejorar nuestros servicios.</p>
-        <div class="animated-arrow">👇</div>
-        
-        <!-- Botón que hace el cambio de panel -->
-        <button onclick="irAPanelOpiniones()" class="btn-forms" style="background: var(--primary);">
-            Deja tu Opinión Detallada.
-        </button>
-    </div>
-</div>
+        <!-- INTERFAZ 1: PÁGINA DE INICIO (ESTADÍSTICAS Y ENCUESTA RÁPIDA) -->
+        <div id="interfaz-inicio">
+            <!-- TODO tu código actual va aquí adentro (Header, Stats, Encuesta TIC, etc.) -->
 
-<!-- INTERFAZ 2: PANEL DE OPINIÓN DETALLADA (ESTÁ OCULTO AL CARGAR) -->
-<div id="interfaz-detallada" style="display: none;">
-    <header class="header">
-        <button onclick="irAInicio()" class="theme-btn">⬅</button>
-        <div class="logo-container">
-            <h1>EcoScan | <span style="color: var(--primary);">Feedback Directo</span></h1>
+            <div class="card form-card">
+                <h3>Tu Opinión Cuenta</h3>
+                <p>La opinión de los usuarios es fundamental para mejorar nuestros servicios.</p>
+                <div class="animated-arrow">👇</div>
+
+                <!-- Botón que hace el cambio de panel -->
+                <button onclick="irAPanelOpiniones()" class="btn-forms" style="background: var(--primary);">
+                    Deja tu Opinión Detallada.
+                </button>
+            </div>
         </div>
-    </header>
 
-    <main class="container">
-        <div class="card">
-            <label>Tu Nombre (Opcional - Solo para fines académicos):</label>
-<input type="text" id="nombre-estudiante-detallado" placeholder="Escribe tu nombre">
-            <h2>Opinión sobre Servicios Alimenticios</h2>
-            <p>Selecciona el local y califica honestamente su servicio.</p>
-            <hr>
+        <!-- INTERFAZ 2: PANEL DE OPINIÓN DETALLADA (ESTÁ OCULTO AL CARGAR) -->
+        <div id="interfaz-detallada" style="display: none;">
+            <header class="header">
+                <button onclick="irAInicio()" class="theme-btn">⬅</button>
+                <div class="logo-container">
+                    <h1>EcoScan | <span style="color: var(--primary);">Feedback Directo</span></h1>
+                </div>
+            </header>
 
-           <label>¿A qué establecimiento te refieres?</label>
-<select id="local-seleccionado">
-    <option value="" disabled selected>Selecciona un local...</option>
-    <option value="Cafetería Central">Cafetería Central</option>
-    <option value="Bar de la Facultad">Bar de la Facultad</option>
-    <option value="Bar TIC">Bar TIC</option>
-    </select>
+            <main class="container">
+                <div class="card">
+                    <label>Tu Nombre (Opcional - Solo para fines académicos):</label>
+                    <input type="text" id="nombre-estudiante-detallado" placeholder="Escribe tu nombre">
+                    <h2>Opinión sobre Servicios Alimenticios</h2>
+                    <p>Selecciona el local y califica honestamente su servicio.</p>
+                    <hr>
 
-<label>Escribe tu opinión:</label>
-<textarea id="comentario-detallado" rows="5"></textarea>
+                    <label>¿A qué establecimiento te refieres?</label>
+                    <select id="local-seleccionado">
+                        <option value="" disabled selected>Selecciona un local...</option>
+                        <option value="Cafetería Central">Cafetería Central</option>
+                        <option value="Bar de la Facultad">Bar de la Facultad</option>
+                        <option value="Bar TIC">Bar TIC</option>
+                    </select>
+
+                    <label>Escribe tu opinión:</label>
+                    <textarea id="comentario-detallado" rows="5"></textarea>
 
 
 
-<button onclick="enviarOpinionFinal()" class="btn-send">Enviar Opinión 🚀</button>
-<button onclick="irAInicio()" class="btn-cancel">Cancelar y Volver</button>
+                    <button onclick="enviarOpinionFinal()" class="btn-send">Enviar Opinión 🚀</button>
+                    <button onclick="irAInicio()" class="btn-cancel">Cancelar y Volver</button>
+                </div>
+            </main>
         </div>
-    </main>
-</div>
 
 
         <div class="action-grid">
@@ -209,8 +212,12 @@
                 <form id="comment-form">
                     <input type="text" id="userName" placeholder="Tu nombre o Apellido" required>
                     <textarea id="userComment" placeholder="¿Qué tal te pareció el proyecto?" required></textarea>
+
+                    <label>Adjuntar evidencia (opcional):</label>
+                    <input type="file" id="evidencia" accept="image/*">
+
                     <button type="submit" class="btn-send">Publicar Comentario</button>
-                    
+
                 </form>
 
                 <div class="card wall-section">
@@ -246,7 +253,7 @@
 
     <audio id="ding-sound" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3"
         preload="auto"></audio>
-        <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 
     <script src="script.js"></script>
 </body>

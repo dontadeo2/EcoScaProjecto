@@ -54,7 +54,7 @@ const palabrasProhibidas = [
     "pendejo",
     "cabrón",
     "zorra",
-    "maricón",  
+    "maricón",
     "coño",
     "maldito",
     "hijo de puta",
@@ -89,8 +89,8 @@ const palabrasProhibidas = [
     "carajo",
     "malparido",
     "malparida",
-    
-   
+
+
 ];
 
 // Función para detectar palabras prohibidas
@@ -118,6 +118,9 @@ document.getElementById('comment-form').onsubmit = (e) => {
     const name = document.getElementById('userName').value.trim();
     const text = document.getElementById('userComment').value.trim();
 
+    const evidenciaInput = document.getElementById('evidencia');
+    const archivo = evidenciaInput.files[0];
+
     // 🔥 Censurar palabras automáticamente
     let comentarioFiltrado = text;
 
@@ -126,7 +129,7 @@ document.getElementById('comment-form').onsubmit = (e) => {
         comentarioFiltrado = comentarioFiltrado.replace(regex, '****');
     });
 
-   
+
 
     if (!text) {
         alert('Por favor escribe un comentario');
@@ -139,39 +142,54 @@ document.getElementById('comment-form').onsubmit = (e) => {
     btn.innerText = "Enviando...";
     btn.disabled = true;
 
-    const commentData = {
-        name: name || 'Anónimo',
-        text: comentarioFiltrado,
-        rating: selectedRating,
-        timestamp: Date.now()
+    const reader = new FileReader();
+
+    reader.onload = function () {
+
+        const commentData = {
+            name: name || 'Anónimo',
+            text: comentarioFiltrado,
+            rating: selectedRating,
+            timestamp: Date.now(),
+            imagen: archivo ? reader.result : null
+        };
+
+        console.log('Enviando comentario:', commentData);
+
+        database.ref('comments').push(commentData)
+            .then((ref) => {
+                console.log('Comentario enviado exitosamente, ID:', ref.key);
+
+                btn.innerText = "¡Enviado! Gracias 💚";
+                btn.style.background = "#27ae60";
+
+                document.getElementById('comment-form').reset();
+
+                selectedRating = 5;
+
+                stars.forEach(st => st.classList.remove('active'));
+                stars[0].classList.add('active');
+
+                setTimeout(() => {
+                    btn.innerText = originalText;
+                    btn.style.background = "var(--primary)";
+                    btn.disabled = false;
+                }, 3000);
+            })
+            .catch((error) => {
+                console.error('Error al enviar comentario:', error);
+                alert('Error al enviar comentario.');
+
+                btn.innerText = originalText;
+                btn.disabled = false;
+            });
     };
 
-    console.log('Enviando comentario:', commentData);
-
-    database.ref('comments').push(commentData)
-        .then((ref) => {
-            console.log('Comentario enviado exitosamente, ID:', ref.key);
-            btn.innerText = "¡Enviado! Gracias 💚";
-            btn.style.background = "#27ae60";
-
-            // Resetear formulario
-            document.getElementById('comment-form').reset();
-            selectedRating = 5;
-            stars.forEach(st => st.classList.remove('active'));
-            stars[0].classList.add('active');
-
-            setTimeout(() => {
-                btn.innerText = originalText;
-                btn.style.background = "var(--primary)";
-                btn.disabled = false;
-            }, 3000);
-        })
-        .catch((error) => {
-            console.error('Error al enviar comentario:', error);
-            alert('Error al enviar comentario. Inténtalo de nuevo.');
-            btn.innerText = originalText;
-            btn.disabled = false;
-        });
+    if (archivo) {
+        reader.readAsDataURL(archivo);
+    } else {
+        reader.onload();
+    }
 };
 
 // Variables para controlar el sonido
@@ -219,6 +237,11 @@ database.ref('comments').on('value', (snapshot) => {
                 <strong>${comment.name || 'Anónimo'}</strong>
                 <span class="stars">${'★'.repeat(comment.rating || 5)}</span>
                 <p>${comment.text || 'Sin comentario'}</p>
+
+                ${comment.imagen ? `
+    <img src="${comment.imagen}" class="evidencia-img">
+` : ''}
+
                 ${comment.timestamp ? `<small>${new Date(comment.timestamp).toLocaleString()}</small>` : ''}
             `;
             container.appendChild(div);
