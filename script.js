@@ -42,6 +42,66 @@ database.ref('.info/connected').on('value', (snap) => {
 
 let selectedRating = 5;
 
+const palabrasProhibidas = [
+    "puta",
+    "mierda",
+    "idiota",
+    "imbecil",
+    "porno",
+    "sexo",
+    "estupido",
+    "gilipollas",
+    "pendejo",
+    "cabrón",
+    "zorra",
+    "maricón",  
+    "coño",
+    "maldito",
+    "hijo de puta",
+    "polla",
+    "culero",
+    "verga",
+    "chinga",
+    "chingada",
+    "chingar",
+    "pendeja",
+    "puto",
+    "puta madre",
+    "hijo de la gran puta",
+    "Rosa melano",
+    "ayer singe",
+    "caca",
+    "culo",
+    "pene",
+    "vagina",
+    "teta",
+    "tetas",
+    "pija",
+    "pene",
+    "coger",
+    "follar",
+    "joder",
+    "jodido",
+    "jodida",
+    "cojones",
+    "hostia",
+    "hostias",
+    "carajo",
+    "malparido",
+    "malparida",
+    
+   
+];
+
+// Función para detectar palabras prohibidas
+function contienePalabrasProhibidas(texto) {
+    texto = texto.toLowerCase();
+
+    return palabrasProhibidas.some(palabra =>
+        texto.includes(palabra)
+    );
+}
+
 // Manejo de las Estrellas
 const stars = document.querySelectorAll('.star-rating span');
 stars.forEach(s => {
@@ -58,6 +118,16 @@ document.getElementById('comment-form').onsubmit = (e) => {
     const name = document.getElementById('userName').value.trim();
     const text = document.getElementById('userComment').value.trim();
 
+    // 🔥 Censurar palabras automáticamente
+    let comentarioFiltrado = text;
+
+    palabrasProhibidas.forEach(palabra => {
+        const regex = new RegExp(palabra, 'gi');
+        comentarioFiltrado = comentarioFiltrado.replace(regex, '****');
+    });
+
+   
+
     if (!text) {
         alert('Por favor escribe un comentario');
         return;
@@ -71,7 +141,7 @@ document.getElementById('comment-form').onsubmit = (e) => {
 
     const commentData = {
         name: name || 'Anónimo',
-        text: text,
+        text: comentarioFiltrado,
         rating: selectedRating,
         timestamp: Date.now()
     };
@@ -178,7 +248,8 @@ database.ref('comments').on('value', (snapshot) => {
     }
 
     // Reproducir sonido para nuevos comentarios
-    if (!isFirstLoad && total > previousCount) {        console.log('Nuevo comentario detectado, reproduciendo sonido');        dingSound.play().catch(error => console.log("Clickea la pantalla primero para el sonido."));
+    if (!isFirstLoad && total > previousCount) {
+        console.log('Nuevo comentario detectado, reproduciendo sonido'); dingSound.play().catch(error => console.log("Clickea la pantalla primero para el sonido."));
     }
 
     previousCount = total;
@@ -216,7 +287,7 @@ themeBtn.onclick = () => {
 // --- GENERAR REPORTE EN PDF ---
 function generarReporte() {
     const pass = prompt("Introduce tu clave de acceso:");
-    
+
     // Configuración de accesos
     const accesos = {
         "admin123": "TODOS",          // Tú (Super Admin)
@@ -234,9 +305,9 @@ function generarReporte() {
 
     database.ref('opiniones_por_local').once('value', (snapshot) => {
         const locales = snapshot.val();
-        if (!locales) { 
-            alert("No hay datos aún."); 
-            return; 
+        if (!locales) {
+            alert("No hay datos aún.");
+            return;
         }
 
         let contenido = `===== REPORTE DE FEEDBACK - ECOSCAN =====\n`;
@@ -275,7 +346,7 @@ function generarReporte() {
         enlace.href = URL.createObjectURL(blob);
         enlace.download = `Reporte_${permiso.replace(/ /g, "_")}.txt`;
         enlace.click();
-        
+
         alert("📊 Reporte generado con éxito.");
     });
 
@@ -476,13 +547,13 @@ function irAInicio() {
 }
 
 // 1. INICIALIZACIÓN (PON TU PUBLIC KEY AQUÍ)
-emailjs.init("8N-lpxos049EJBCNn"); 
+emailjs.init("8N-lpxos049EJBCNn");
 
 function enviarOpinionFinal() {
     const localSelect = document.getElementById('local-seleccionado');
     const opinionText = document.getElementById('comentario-detallado');
     const nombreInput = document.getElementById('nombre-estudiante-detallado'); // CAPTURA EL NUEVO CAMPO
-    
+
     const local = localSelect.value;
     const opinion = opinionText.value;
     // Si deja vacío el nombre, ponemos "Anónimo"
@@ -495,36 +566,36 @@ function enviarOpinionFinal() {
 
     // Guardamos el NOMBRE REAL en Firebase para ti (Super Admin)
     const datosFirebase = {
-        usuario: nombreReal, 
+        usuario: nombreReal,
         comentario: opinion,
         fecha: new Date().toLocaleString()
     };
 
     database.ref('opiniones_por_local/' + local).push(datosFirebase)
-    .then(() => {
-        // ENVIAR EMAIL AL DUEÑO: Aquí forzamos "Estudiante Anónimo" para proteger la identidad
-        try {
-            enviarNotificacionEmail(local, "Estudiante Anónimo", opinion);
-        } catch(e) {
-            console.log("Email no enviado, pero datos guardados en nube.");
-        }
-        
-        alert("✅ ¡Opinión enviada con éxito!");
-        
-        // LIMPIEZA DE CAMPOS
-        opinionText.value = "";
-        nombreInput.value = ""; 
-        localSelect.selectedIndex = 0;
-        
-        irAInicio();
-    })
-    .catch((error) => {
-        alert("Error al conectar con la base de datos.");
-        console.error(error);
-    });
+        .then(() => {
+            // ENVIAR EMAIL AL DUEÑO: Aquí forzamos "Estudiante Anónimo" para proteger la identidad
+            try {
+                enviarNotificacionEmail(local, "Estudiante Anónimo", opinion);
+            } catch (e) {
+                console.log("Email no enviado, pero datos guardados en nube.");
+            }
+
+            alert("✅ ¡Opinión enviada con éxito!");
+
+            // LIMPIEZA DE CAMPOS
+            opinionText.value = "";
+            nombreInput.value = "";
+            localSelect.selectedIndex = 0;
+
+            irAInicio();
+        })
+        .catch((error) => {
+            alert("Error al conectar con la base de datos.");
+            console.error(error);
+        });
 }
 // 1. INICIALIZACIÓN CON TU CLAVE REAL (Sacada de tu foto)
-emailjs.init("8N-lpxos049EJBCNn"); 
+emailjs.init("8N-lpxos049EJBCNn");
 
 function enviarNotificacionEmail(local, nombre, mensaje) {
     const serviceID = 'service_z00x1o9';
@@ -535,7 +606,7 @@ function enviarNotificacionEmail(local, nombre, mensaje) {
     const parametros = {
         establecimiento: local,    // <--- ESTO LLENA EL {{establecimiento}}
         mensaje: mensaje,          // <--- ESTO LLENA EL {{mensaje}}
-        nombre: "Anónimo",         
+        nombre: "Anónimo",
         email_dueno: obtenerEmailDelDueño(local) // Esto asegura que le llegue al dueño correcto
     };
 
@@ -549,7 +620,7 @@ function obtenerEmailDelDueño(local) {
     const correos = {
         "Cafetería Central": "jenniffersq11@gmail.com", // Cambia por los reales
         "Bar de la Facultad": "angel.ballestero.villegas@utelvt.edu.ec",
-        "Bar TIC": "jenniffer.quinonez.clavijo@utelvt.edu.ec" 
+        "Bar TIC": "jenniffer.quinonez.clavijo@utelvt.edu.ec"
     };
     return correos[local] || "jenniffer.quinonez.clavijo@utelvt.edu.ec";
 }
