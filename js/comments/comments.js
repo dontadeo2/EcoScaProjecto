@@ -73,90 +73,125 @@ document.getElementById('comment-form').onsubmit = async (e) => {
 
     console.log('📤 Enviando a Firebase...');
 
-    // Usar async para manejar Storage
-    (async () => {
-        try {
-            let imagenData = null;
+    const reader = new FileReader();
 
-            // Si hay imagen, subirla a Storage primero
-            if (archivo) {
-                console.log('📸 Subiendo imagen a Storage...');
-                imagenData = await window.subirImagenAStorage(archivo);
-                console.log('✅ Imagen subida:', imagenData);
-            }
+    reader.onload = function () {
 
-            const commentData = {
+        const commentData = {
 
-                name: name || 'Anónimo',
+            name: name || 'Anónimo',
 
-                text: comentarioFiltrado,
+            text: comentarioFiltrado,
 
-                rating: window.selectedRating,
+            rating: window.selectedRating,
 
-                timestamp: Date.now(),
+            timestamp: Date.now(),
 
-                // Guardar URL de Storage en lugar de Base64
-                imagenUrl: imagenData ? imagenData.url : null,
+            // Imagen en Base64
+            imagen: archivo ? reader.result : null
+        };
 
-                // Guardar referencia para poder eliminar después
-                nombreArchivo: imagenData ? imagenData.nombreArchivo : null
-            };
+        database.ref('comments')
+            .push(commentData)
 
-            database.ref('comments')
-                .push(commentData)
+            .then(() => {
 
-                .then(() => {
-                    console.log('✅ Comentario enviado exitosamente');
+                console.log('✅ Comentario enviado exitosamente');
 
-                    btn.innerText =
-                        "¡Enviado! 💚";
+                btn.innerText = "¡Enviado! 💚";
 
-                    btn.style.background =
-                        "#27ae60";
+                btn.style.background = "#27ae60";
 
-                    document
-                        .getElementById('comment-form')
-                        .reset();
+                document
+                    .getElementById('comment-form')
+                    .reset();
 
-                    window.selectedRating = 5;
+                window.selectedRating = 5;
 
-                    stars.forEach(st =>
-                        st.classList.remove('active')
-                    );
+                stars.forEach(st =>
+                    st.classList.remove('active')
+                );
 
-                    stars[0].classList.add('active');
+                stars[0].classList.add('active');
 
-                    setTimeout(() => {
+                setTimeout(() => {
 
-                        btn.innerText =
-                            originalText;
+                    btn.innerText = originalText;
 
-                        btn.style.background =
-                            "var(--primary)";
-
-                        btn.disabled = false;
-
-                    }, 3000);
-
-                })
-
-                .catch((error) => {
-                    console.error('❌ Error al enviar comentario:', error);
-
-                    alert('Error al enviar comentario.');
-
-                    btn.innerText =
-                        originalText;
+                    btn.style.background = "var(--primary)";
 
                     btn.disabled = false;
-                });
-        } catch (error) {
-            console.error('❌ Error al procesar imagen:', error);
-            alert('Error al procesar la imagen: ' + error.message);
-            btn.innerText = originalText;
+
+                }, 3000);
+
+            })
+
+            .catch((error) => {
+
+                console.error('❌ Error al enviar comentario:', error);
+
+                alert('Error al enviar comentario.');
+
+                btn.innerText = originalText;
+
+                btn.disabled = false;
+            });
+    };
+
+    if (archivo) {
+        reader.readAsDataURL(archivo);
+    } else {
+        reader.onload();
+    }
+    database.ref('comments')
+        .push(commentData)
+
+        .then(() => {
+            console.log('✅ Comentario enviado exitosamente');
+
+            btn.innerText =
+                "¡Enviado! 💚";
+
+            btn.style.background =
+                "#27ae60";
+
+            document
+                .getElementById('comment-form')
+                .reset();
+
+            window.selectedRating = 5;
+
+            stars.forEach(st =>
+                st.classList.remove('active')
+            );
+
+            stars[0].classList.add('active');
+
+            setTimeout(() => {
+
+                btn.innerText =
+                    originalText;
+
+                btn.style.background =
+                    "var(--primary)";
+
+                btn.disabled = false;
+
+            }, 3000);
+
+        })
+
+        .catch((error) => {
+            console.error('❌ Error al enviar comentario:', error);
+
+            alert('Error al enviar comentario.');
+
+            btn.innerText =
+                originalText;
+
             btn.disabled = false;
-        }
-    })();
+        });
+
 
 };
 
@@ -181,15 +216,15 @@ database.ref('comments').on('value', (snapshot) => {
         const commentsArray =
             Object.entries(data)
 
-            .map(([id, comment]) => ({
-                id,
-                ...comment
-            }))
+                .map(([id, comment]) => ({
+                    id,
+                    ...comment
+                }))
 
-            .sort((a, b) =>
-                (b.timestamp || 0)
-                - (a.timestamp || 0)
-            );
+                .sort((a, b) =>
+                    (b.timestamp || 0)
+                    - (a.timestamp || 0)
+                );
 
         commentsArray.forEach(comment => {
 
@@ -212,9 +247,9 @@ database.ref('comments').on('value', (snapshot) => {
 
                 <p>${comment.text || 'Sin comentario'}</p>
 
-                ${comment.imagenUrl ? `
-                    <img src="${comment.imagenUrl}" class="evidencia-img" loading="lazy">
-                ` : ''}
+               ${comment.imagen ? `
+    <img src="${comment.imagen}" class="evidencia-img">
+` : ''}
 
                 ${comment.timestamp ? `
                     <small>
