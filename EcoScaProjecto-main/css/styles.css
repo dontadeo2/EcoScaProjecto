@@ -13,8 +13,8 @@
 /* VARIABLES PARA EL MODO OSCURO (Esto es pura magia) */
 body.dark-mode {
     --bg-gradient-1: #121212;
-    --bg-gradient-2: #1e1e1e;
-    --surface: rgba(30,30,30,0.95);
+    --bg-gradient-2: #181818;
+    --surface: #1c1c1c;
     --border: rgba(46,204,113,0.4);
     --text: #f0f0f0;
     --muted: #a0a0a0;
@@ -606,10 +606,11 @@ input:hover, textarea:hover, select:hover {
 
 /* 1. Solo el contenedor principal lleva el fondo blanco y la sombra */
 .container, #seccion-opinion-detallada {
-    background: #ffffff !important;
+    background: var(--surface) !important;
+    color: var(--text) !important;
     border-radius: 16px !important;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05) !important;
-    border: none !important;
+    box-shadow: 0 10px 30px var(--card-shadow) !important;
+    border: 1px solid var(--border) !important;
     box-sizing: border-box !important;
     margin: 30px auto !important;
     transition: all 0.3s ease !important;
@@ -627,7 +628,7 @@ form, fieldset {
 
 /* Títulos elegantes */
 h2, .titulo-seccion {
-    color: #1e7e34 !important;
+    color: var(--text) !important;
     font-weight: 700 !important;
     text-align: center;
     margin-bottom: 30px;
@@ -640,28 +641,49 @@ h2, .titulo-seccion {
 input[type="text"], select, textarea {
     width: 100% !important;
     padding: 14px 18px !important;
-    border: 2px solid #e2e8f0 !important;
+    border: 2px solid var(--border) !important;
     border-radius: 10px !important;
-    background-color: #f8fafc !important;
+    background-color: var(--surface) !important;
     font-size: 15px !important;
     transition: all 0.3s ease !important;
     box-sizing: border-box !important;
     margin-top: 8px;
     margin-bottom: 22px;
+     color: var(--text) !important;
+     caret-color: var(--primary);
 }
 
 /* Foco interactivo verde */
 input[type="text"]:focus, select:focus, textarea:focus {
     border-color: #28a745 !important;
-    background-color: #ffffff !important;
+    background-color: var(--surface) !important;
+    color: var(--text) !important;
     box-shadow: 0 0 0 4px rgba(40, 167, 69, 0.12) !important;
     outline: none !important;
+}
+
+input::placeholder,
+textarea::placeholder {
+    color: var(--muted);
+    opacity: 0.7;
+}
+
+* {
+    transition:
+        background-color 0.3s ease,
+        color 0.3s ease,
+        border-color 0.3s ease,
+        box-shadow 0.3s ease;
+}
+
+html {
+    scrollbar-color: var(--primary) var(--bg-gradient-2);
 }
 
 /* Estilo para las etiquetas de las preguntas */
 label {
     font-weight: 600 !important;
-    color: #334155 !important;
+    color: var(--text) !important;
     font-size: 15px !important;
     display: block;
     margin-top: 14px;
@@ -670,10 +692,10 @@ label {
 
 /* Campo de subir archivo estético */
 input[type="file"] {
-    background: #f1f5f9 !important;
+    background: var(--surface) !important;
     padding: 12px !important;
     border-radius: 10px !important;
-    border: 2px dashed #cbd5e1 !important;
+    border: 2px dashed var(--border) !important;
     width: 100% !important;
     box-sizing: border-box !important;
     cursor: pointer !important;

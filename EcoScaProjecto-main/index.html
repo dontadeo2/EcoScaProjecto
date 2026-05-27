@@ -6,9 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EcoScan | Casa Abierta UTLVTE</title>
     <link rel="stylesheet" href="css/styles.css">
-    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
-   <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>   
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-storage-compat.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -169,32 +167,32 @@
 
         <!-- INTERFAZ 2: PANEL DE OPINIÓN DETALLADA (ESTÁ OCULTO AL CARGAR) -->
        <div id="interfaz-detallada" style="display: none;">
-            <header class="header">
-                <button onclick="irAInicio()" class="theme-btn">⬅</button>
-                <div class="logo-container">
-                    <h1>EcoScan | <span style="color: var(--primary);">Feedback Directo</span></h1>
-                </div>
-            </header>
+ <header class="header">
+ <button onclick="irAInicio()" class="theme-btn">⬅</button>
+ <div class="logo-container">
+ <h1>EcoScan | <span style="color: var(--primary);">Feedback Directo</span></h1>
+ </div>
+   </header>
 
-            <main class="container">
-                <div class="card">
-                    <label>Tu Nombre (Opcional - Para fines académicos):</label>
-                    <input type="text" id="nombre-estudiante-detallado" placeholder=" Tu nombre sera anonimo en este comentario...">
-                    
+ <main class="container">
+<div class="card">
+<label>Tu Nombre (Opcional - Para fines académicos):</label>
+ <input type="text" id="nombre-estudiante-detallado" placeholder=" Tu nombre sera anonimo en este comentario...">
+ 
                     <h2>Opinión sobre Servicios Alimenticios</h2>
-                    <p>Selecciona el local y califica honestamente su servicio.</p>
-                    <hr>
+<p>Selecciona el local y califica honestamente su servicio.</p>
+ <hr>
 
-                    <label>¿A qué establecimiento te refieres?</label>
-                    <select id="local-seleccionado">
-                        <option value="" disabled selected>Selecciona un local...</option>
-                        <option value="Cafetería Central">Cafetería Central</option>
-                        <option value="Bar de la Facultad">Bar de la Facultad</option>
-                        <option value="Bar TIC">Bar TIC</option>
-                    </select>
+ <label>¿A qué establecimiento te refieres?</label>
+ <select id="local-seleccionado">
+ <option value="" disabled selected>Selecciona un local...</option>
+ <option value="Cafetería Central">Cafetería Central</option>
+ <option value="Bar de la Facultad">Bar de la Facultad</option>
+<option value="Bar TIC">Bar TIC</option>
+ </select>
 
-                    <label>Escribe tu opinión:</label>
-                    <textarea id="comentario-detallado" rows="5" placeholder="Deja tu comentario aquí..."></textarea>
+ <label>Escribe tu opinión:</label>
+<textarea id="comentario-detallado" rows="5" placeholder="Deja tu comentario aquí..."></textarea>
 
                     <label style="margin-top: 15px; display: block;">Adjuntar Foto de Evidencia (Opcional):</label>
                     <input type="file" id="foto-evidencia-detallada" accept="image/*" onchange="previsualizarImagen(event)">
@@ -207,11 +205,11 @@
     ⏳ Enviando tu opinión y procesando evidencia... Por favor, espera.
 </div>
 
-                    <button id="btn-enviar-detallado" onclick="enviarOpinionFinal()" class="btn-send">Enviar Opinión Directa 🚀</button>
-                    <button onclick="irAInicio()" class="btn-cancel">Cancelar y Volver</button>
-                </div>
-            </main>
-        </div>
+ <button id="btn-enviar-detallado" onclick="enviarOpinionFinal()" class="btn-send">Enviar Opinión Directa 🚀</button>
+ <button onclick="irAInicio()" class="btn-cancel">Cancelar y Volver</button>
+ </div>
+</main>
+ </div>
 
 
         <div class="action-grid">
